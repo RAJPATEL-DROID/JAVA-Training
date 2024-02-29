@@ -1,0 +1,9 @@
+Feb 02, 2024 11:05:00 AM LoggerExample init
+INFO: Logger Initialsed
+Feb 02, 2024 11:05:00 AM LoggerExample main
+WARNING: Exception ::
+java.lang.ArithmeticException: / by zero
+	at LoggerExample.main(LoggerExample.java:36)
+
+Feb 02, 2024 11:05:00 AM LoggerExample main
+INFO: End of Logger
