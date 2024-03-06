@@ -1,4 +1,4 @@
-package org.task;
+package org.taskv2;
 
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
@@ -6,7 +6,7 @@ import org.zeromq.ZMQ;
 
 public class TaskSubscriber
 {
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args)
     {
         try (ZContext context = new ZContext())
         {
@@ -36,5 +36,6 @@ public class TaskSubscriber
         {
             throw new RuntimeException(e);
         }
+
     }
 }

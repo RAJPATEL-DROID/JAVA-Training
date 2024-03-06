@@ -1,4 +1,4 @@
-package org.task;
+package org.taskv2;
 
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
@@ -6,9 +6,8 @@ import org.zeromq.ZMQ;
 
 public class TaskPublisher
 {
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args)
     {
-        // Create a context
         try(ZContext context = new ZContext()){
             ZMQ.Socket[] publishers = new ZMQ.Socket[3];
 
