@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 public class ServerClass
 {
     private static final int SERVER_PORT = 12345;
-//    private static final int MAX_GAME_ROOMS = 10;
+    //    private static final int MAX_GAME_ROOMS = 10;
 
     private static final ExecutorService clientHandlerThreads = Executors.newCachedThreadPool();
 
@@ -23,7 +23,8 @@ public class ServerClass
         {
             System.out.println("Server started on port : " + SERVER_PORT);
             GameManager gameManager = new GameManager();
-            while(true){
+            while(true)
+            {
                 Socket userSocket = socket.accept();
 
                 System.out.println("New client connected : " + userSocket);
@@ -32,10 +33,11 @@ public class ServerClass
 
                 clientHandlerThreads.execute(clientHandler);
 
+
             }
         } catch(IOException e)
         {
-            e.printStackTrace();
+            System.out.println();
         }
     }
 

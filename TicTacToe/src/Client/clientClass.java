@@ -15,10 +15,6 @@ public class clientClass
 
     private static final int SERVER_PORT = 12345; // Server port
 
-    private static String sessionId = null;
-
-    private static String portNo = null;
-
     public static void main(String[] args)
     {
         try
@@ -31,14 +27,17 @@ public class clientClass
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter writer = new PrintWriter(socket.getOutputStream());
             BufferedReader terminalReader = new BufferedReader(new InputStreamReader(System.in));
-            String instruction = "";
-            readInstructions(instruction, reader, writer);
+            String instruction;
+            readInstructions(reader);
 
             String userChoice = "";
             userChoice = takeUserInput(userChoice, terminalReader, writer);
 
-            boolean shoudlContinue = true;
-            while(shoudlContinue){
+            boolean shouldContinue = true;
+            while(shouldContinue)
+            {
+                String sessionId;
+                String portNo = null;
                 if(Objects.equals(userChoice, "CREATE_NEW_ROOM"))
                 {
 
@@ -54,8 +53,8 @@ public class clientClass
                         {
                             sessionId = (String) Arrays.stream(instruction.split(":")).toArray()[1];
                             System.out.println(sessionId);
-                            shoudlContinue = false;
-                            playGame(sessionId,portNo);
+                            shouldContinue = false;
+                            playGame(sessionId, portNo);
                             break;
                         }
                     }
@@ -70,22 +69,24 @@ public class clientClass
                     writer.flush();
                     while((instruction = reader.readLine()) != null)
                     {
-                        System.out.println(instruction);
-                        if(instruction.contains("Port No of GameRoom :")){
+                        if(instruction.contains("Port No of GameRoom :"))
+                        {
+                            System.out.println(instruction);
                             portNo = (String) Arrays.stream(instruction.split(":")).toArray()[1];
                             System.out.println(portNo);
                         }
                         if(instruction.equals("No game room exist on this session Id!"))
                         {
-                            readInstructions(instruction, reader, writer);
+                            System.out.println(instruction);
+                            readInstructions(reader);
                             userChoice = takeUserInput(userChoice, terminalReader, writer);
-                            System.out.println(userChoice + " Hello ");
                             break;
                         }
                         else if(instruction.equals("Enjoy the game!!"))
                         {
-                            shoudlContinue = false;
-                            playGame(sessionId,portNo);
+//                            System.out.println(instruction);
+                            shouldContinue = false;
+                            playGame(sessionId, portNo);
                             break;
                         }
                     }
@@ -93,7 +94,7 @@ public class clientClass
                 else
                 {
                     System.out.println(reader.readLine());
-                    readInstructions(userChoice, reader, writer);
+                    readInstructions(reader);
                     userChoice = takeUserInput(userChoice, terminalReader, writer);
 
                 }
@@ -106,47 +107,63 @@ public class clientClass
         }
     }
 
-    private static void playGame(String sessionId,String portNo){
+    private static void playGame(String sessionId, String portNo)
+    {
         try(Socket gameSocket = new Socket(SERVER_ADDRESS, Integer.parseInt(portNo)))
         {
+//            System.out.println("Playing Game!!!");
             PrintWriter writer = new PrintWriter(gameSocket.getOutputStream());
+            BufferedReader reader = new BufferedReader(new InputStreamReader(gameSocket.getInputStream()));
+
             writer.println(sessionId);
             writer.flush();
+            System.out.println("hii");
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(gameSocket.getInputStream()));
             String response = reader.readLine();
+            System.out.println("Hello");
+            switch(response)
+            {
+                case "Maximum number of players reached for this game room. Cannot join." ->
+                {
+                    System.out.println(response);
+                    System.out.println("Try connecting after some time or create new room.");
+                    // Handle the case where the GameRoom is full
+                    // You can prompt the user to try again later or take any other appropriate action
+                }
+                case "Session Id is invalid!!" -> System.out.println(response);
+                case "Welcome to Game" ->
+                {
+                    System.out.println(response);
+                    response = reader.readLine();
+                    System.out.println(response);
+//
+//                    while((response = reader.readLine()) != null)
+//                    {
+//                        System.out.println(response);
+//                     }
 
-            if (response.equals("Maximum number of players reached for this game room. Cannot join.")) {
-                System.out.println(response);
-                System.out.println("Try connecting after some time or create new room.");
-                // Handle the case where the GameRoom is full
-                // You can prompt the user to try again later or take any other appropriate action
-            } else {
-                System.out.println("Game is starting...");
-                // Implement game logic and communication with the server here
-
-
+                    // Implement the Game Logic
+                }
             }
 
-
-            gameSocket.close();
-        }
-         catch(UnknownHostException e)
+            reader.close();
+            writer.close();
+        } catch(UnknownHostException e)
         {
-                System.out.println("IP address of the host could not be determined.");
-        }
-        catch(IOException e){
-                System.out.println("Error creating the Socket!!");
+            System.out.println("IP address of the host could not be determined.");
+        } catch(IOException e)
+        {
+            System.out.println("Error creating the Socket!!");
         }
 
     }
+
     private static String takeUserInput(String user, BufferedReader term, PrintWriter writer)
     {
         System.out.println("Enter your Option:");
         try
         {
             user = term.readLine();
-            System.out.println(user);
             writer.println(user);
             writer.flush();
         } catch(IOException e)
@@ -157,11 +174,12 @@ public class clientClass
         return user;
     }
 
-    private static void readInstructions(String instruction, BufferedReader reader, PrintWriter writer)
+    private static void readInstructions(BufferedReader reader)
     {
         // Read server instructions
         try
         {
+            String instruction;
             while((instruction = reader.readLine()) != null)
             {
                 if(instruction.equals("TERMINATE"))

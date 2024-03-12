@@ -5,16 +5,18 @@ import Server.gameroom.GameRoom;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class GameManager
 {
     static HashMap<String , GameRoom> mapOfGameRooms;
 
-    private final Map<String, AbstractMap.SimpleEntry<Integer, GameRoom>> sessionIdToGameRoomMap = new HashMap<>();
+    private final Map<Long, AbstractMap.SimpleEntry<Integer, GameRoom>> sessionIdToGameRoomMap = new HashMap<>();
     private final ExecutorService threadsOfGameRooms;
 
     private static Integer arrayIndex =-1;
+
+    private static final AtomicLong ssid = new AtomicLong(1000);
 
     final Integer FIRST_PORT = 49152;
     final Integer LAST_PORT = 49162;
@@ -31,7 +33,8 @@ public class GameManager
 
     public synchronized List<String > createAndStartNewRoom(){
         Integer portNo = allocatePort();
-        String  sessionId = generateSessionId();
+        Long sessionId = ssid.getAndAdd(10);
+//        String  sessionId = generateSessionId();
         String roomId = sessionId + "-" + portNo.toString();
         System.out.println(roomId);
         if(portNo != -1){
@@ -40,27 +43,7 @@ public class GameManager
             sessionIdToGameRoomMap.put(sessionId, new AbstractMap.SimpleEntry<>(portNo, gameRoomThread));
             threadsOfGameRooms.submit(gameRoomThread);
         }
-        return List.of(portNo.toString(),sessionId);
-    }
-
-    public synchronized Integer validateSessionId(String sessionId) {
-        List<String> roomId;
-        try
-        {
-            roomId = mapOfGameRooms.keySet().stream().filter(e -> e.contains(sessionId)).collect(Collectors.toList());
-            System.out.println(roomId);
-            if (roomId.isEmpty()) {
-                return -1;
-            }
-        }catch(NullPointerException e){
-            System.out.println("Wrong Session Id !!");
-            return -1;
-        }
-        return Integer.parseInt(roomId.get(0).split("-")[1]);
-    }
-    public synchronized void removeGameRoom(String roomId) {
-
-        mapOfGameRooms.remove(roomId);
+        return List.of(portNo.toString(),sessionId.toString());
     }
 
     public Integer allocatePort(){
@@ -68,18 +51,11 @@ public class GameManager
         return ports.get(arrayIndex);
     }
 
-    public synchronized String generateSessionId() {
-        long unique_no = System.currentTimeMillis();
-        return Long.toString(unique_no);
-    }
-
-    public Integer getPortNoForSessionId(String sessionId) {
+    public Integer getPortNoForSessionId(Long sessionId) {
+        System.out.println("SessionId provided by the user: " + sessionId);
         AbstractMap.SimpleEntry<Integer, GameRoom> entry = sessionIdToGameRoomMap.get(sessionId);
         return entry != null ? entry.getKey() : -1;
     }
 
-    public GameRoom getGameRoomForSessionId(String sessionId) {
-        AbstractMap.SimpleEntry<Integer, GameRoom> entry = sessionIdToGameRoomMap.get(sessionId);
-        return entry != null ? entry.getValue() : null;
-    }
+
 }

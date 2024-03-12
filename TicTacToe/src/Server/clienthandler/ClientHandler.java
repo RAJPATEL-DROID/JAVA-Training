@@ -1,8 +1,6 @@
 package Server.clienthandler;
 
 import Server.gamemanager.GameManager;
-import Server.gameroom.GameRoom;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,7 +10,6 @@ import java.util.List;
 
 public class ClientHandler extends Thread
 {
-    private static final int MAX_GAME_ROOMS = 10;
 
     private final Socket clientSocket;
 
@@ -73,10 +70,9 @@ public class ClientHandler extends Thread
     {
 
         System.out.println("Taking Input");
-        String inputLine = "";
+        String inputLine;
         try
         {
-
             while((inputLine = reader.readLine()) != null)
             {
                 if(inputLine.equals("CREATE_NEW_ROOM"))
@@ -95,7 +91,7 @@ public class ClientHandler extends Thread
                     System.out.println("Taking the session ID ");
                     System.out.println("----------------ServerSide");
                     String sessionId = reader.readLine();
-                    Integer portNo = gameManager.getPortNoForSessionId(sessionId);
+                    Integer portNo = gameManager.getPortNoForSessionId(Long.valueOf(sessionId));
                     if(portNo == -1)
                     {
                         writer.println("No game room exist on this session Id!");
@@ -106,8 +102,6 @@ public class ClientHandler extends Thread
                     }
                     else
                     {
-                        GameRoom gameRoom = gameManager.getGameRoomForSessionId(sessionId);
-                        gameRoom.addParticipant(this);
                         writer.println("Port No of GameRoom :"+ portNo);
                         writer.println("Enjoy the game!!");
                         writer.flush();
