@@ -32,10 +32,9 @@ public class ServerClass
                 ClientHandler clientHandler = new ClientHandler(userSocket, gameManager);
 
                 clientHandlerThreads.execute(clientHandler);
-
-
             }
-        } catch(IOException e)
+        }
+        catch(IOException e)
         {
             System.out.println();
         }

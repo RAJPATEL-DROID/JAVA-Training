@@ -7,8 +7,7 @@ public class Board
     public static final int ROWS = 3;
     public static final int COLS = 3;
 
-    // Define properties (package-visible)
-    /** A board composes of [ROWS]x[COLS] Cell instances */
+
     public Cell[][] cells;
 
     /** Constructor to initialize the game board */
@@ -16,7 +15,6 @@ public class Board
         initGame();
     }
 
-    /** Initialize the board (run once) */
     public void initGame() {
         cells = new Cell[ROWS][COLS];  // allocate the array
         for (int row = 0; row < ROWS; ++row) {
@@ -26,8 +24,6 @@ public class Board
             }
         }
     }
-
-    /** Reset the contents of the game board, ready for new game. */
     public void newGame() {
         for (int row = 0; row < ROWS; ++row) {
             for (int col = 0; col < COLS; ++col) {
@@ -36,12 +32,8 @@ public class Board
         }
     }
 
-    /**
-     *  The given player makes a move on (selectedRow, selectedCol).
-     *  Update cells[selectedRow][selectedCol]. Compute and return the
-     *  new game state (PLAYING, DRAW, CROSS_WON, NOUGHT_WON).
-     */
-    public State stepGame(Seed player, int selectedRow, int selectedCol) {
+
+    public State updateGameState(Seed player, int selectedRow, int selectedCol) {
 
         cells[selectedRow][selectedCol].content = player;
 
@@ -83,7 +75,8 @@ public class Board
     }
 
     /** The board paints itself */
-    public void paint(PrintWriter writer1,PrintWriter writer2) {
+    public void paint(PrintWriter writer1,PrintWriter writer2) throws InterruptedException
+    {
         StringBuilder boardRepresentation = new StringBuilder();
         for (int row = 0; row < ROWS; ++row) {
             for (int col = 0; col < COLS; ++col) {
@@ -96,12 +89,12 @@ public class Board
             if (row < ROWS - 1) {
                 boardRepresentation.append("-----------\n");
             }
-        }
-        boardRepresentation.append("\n");
+        };
 
         String boardString = boardRepresentation.toString();
         writer1.println(boardString);
         writer1.flush();
+        Thread.sleep(1000);
         writer2.println(boardString);
         writer2.flush();
     }
