@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GameHandler {
 
@@ -75,8 +76,10 @@ public class GameHandler {
             {
                 if( (turn == 1) && !firstUserMove){
                     printBoard(reader);
+                    firstUserMove = !firstUserMove;
                 }else if( (turn == 2) && firstUserMove){
                     printBoard(reader);
+                    firstUserMove = !firstUserMove;
                 }
                 takeUserMove(reader, writer, userInputReader);
 
