@@ -128,7 +128,9 @@ public class GameHandler {
                 takeUserMove(reader, writer, userInputReader);
 
                 String validationResult = reader.readLine();
-                System.out.println("validation result:" + validationResult);
+
+                //                System.out.println("validation result:" + validationResult);
+
                 if(validationResult == null)
                 {
                     return;
