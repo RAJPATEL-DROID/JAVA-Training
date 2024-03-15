@@ -51,7 +51,6 @@ public class GameRoom extends Thread
 
         this.portNo = Integer.valueOf(lst.get(1));
 
-
         game = new Game();
     }
 

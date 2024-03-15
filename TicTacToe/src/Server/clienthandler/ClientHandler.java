@@ -30,8 +30,8 @@ public class ClientHandler extends Thread
             reader = new BufferedReader(new InputStreamReader(clientsocket.getInputStream()));
 
             writer = new PrintWriter(clientsocket.getOutputStream());
-
-        } catch(IOException e)
+        }
+        catch(IOException e)
         {
             System.out.println("Error while reading and writing to user stream");
         }

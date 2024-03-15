@@ -25,13 +25,13 @@ public class Game
     private final Board board;
 
     private State gameState;
-    private static final Lock gameLock = new ReentrantLock();
+    private final Lock gameLock = new ReentrantLock();
 
-    private static final Condition player1Turn = gameLock.newCondition();
+    private final Condition player1Turn = gameLock.newCondition();
 
-    private static final Condition player2Turn = gameLock.newCondition();
+    private final Condition player2Turn = gameLock.newCondition();
 
-    private static final AtomicBoolean instructionsSent = new AtomicBoolean(false);
+    private final AtomicBoolean instructionsSent = new AtomicBoolean(false);
 
     private final CopyOnWriteArrayList<Player> participants = new CopyOnWriteArrayList<>();
 

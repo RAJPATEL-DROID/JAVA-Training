@@ -48,8 +48,7 @@ public class GameManager
 
             sessionIdToGameRoomMap.put(sessionId, new AbstractMap.SimpleEntry<>(portNo, gameRoomThread));
 
-
-          threadsOfGameRooms.submit(gameRoomThread);
+            threadsOfGameRooms.submit(gameRoomThread);
 
         }
 
