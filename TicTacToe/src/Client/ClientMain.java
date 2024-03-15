@@ -66,8 +66,6 @@ public class ClientMain
 
                             gameHandler.playGame(sessionId, portNo, 1);
 
-                            System.out.println(reader.readLine());
-
                             break;
                         }
                     }
@@ -131,6 +129,9 @@ public class ClientMain
 
             System.out.println("Server refused connection, Try After sometime!!");
 
+        }finally
+        {
+            System.out.println("Closing connection with Server....");
         }
     }
 

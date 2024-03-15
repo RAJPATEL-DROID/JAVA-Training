@@ -1,12 +1,11 @@
 package Server.game;
 
 import Server.gameboard.Board;
-import Server.gameboard.Seed;
+import Server.gameboard.Symbol;
 import Server.gameboard.State;
 import Server.player.Player;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -104,10 +103,17 @@ public class Game
             {
                 sendInstructions();
 
-                board.paint(player1.writer(), player2.writer());
+                printBoard();
             }
 
             start();
+
+            if(instructionsSent.compareAndSet(true, false))
+            {
+                System.out.println(Thread.currentThread().getName());
+                sendEndingInstructions();
+            }
+            System.out.println(Thread.currentThread().getName());
         } catch (InterruptedException exception) {
             System.out.println("Game Interrupted while waiting for the Thread" + exception.getMessage());
         }
@@ -130,6 +136,11 @@ public class Game
 
                     player1Turn.await();
 
+                    if(!gameState.equals(State.PLAYING))
+                    {
+                        return;
+
+                    }
                 }
                 else
                 {
@@ -138,6 +149,10 @@ public class Game
 
                     player2Turn.await();
 
+                    if(!gameState.equals(State.PLAYING))
+                    {
+                        return;
+                    }
                 }
 
                 boolean validMove = false;
@@ -149,7 +164,8 @@ public class Game
                     try
                     {
                         System.out.println("Currently Thread : " + Thread.currentThread().getName() + "'s turn is to take input");
-                        System.out.println("It's turn of player with symbol of " + currentPlayer.get().seed());
+                        System.out.println("It's turn of player with symbol of " + currentPlayer.get().symbol());
+
                         String move = receiveMove(currentPlayer.get());
 
                         System.out.println(move);
@@ -160,7 +176,7 @@ public class Game
 
                         if(isValidMove(row, col))
                         {
-                            gameState = board.updateGameState(currentPlayer.get().seed(), row, col);
+                            gameState = board.updateGameState(currentPlayer.get().symbol(), row, col);
 
                             validMove = true;
 
@@ -168,52 +184,79 @@ public class Game
 
                             currentPlayer.get().writer().flush();
 
-                            printBoard(player1.writer(), player2.writer());
+                            printBoard();
                         }
                         else
                         {
-                            currentPlayer.get().writer().println("Invalid Move,Please Try Again");
+                            currentPlayer.get().writer().println("Invalid Move,Please Try again with valid move.");
 
                             currentPlayer.get().writer().flush();
                         }
-                    } catch(IOException e)
+                    }
+                    catch(NumberFormatException e)
+                    {
+                        currentPlayer.get().writer().println("Invalid input format. Try again with row and column separated by a comma.");
+
+                        currentPlayer.get().writer().flush();
+                    }
+                    catch(ArrayIndexOutOfBoundsException e)
+                    {
+                        currentPlayer.get().writer().println("Invalid input. Try again with values in the range of Board.");
+
+                        currentPlayer.get().writer().flush();
+                    }
+                    catch(IOException e)
                     {
                         System.out.println("Error reading player's move, Game is Ending...");
 
-//                        informOtherUser();
+                        participants.remove(currentPlayer.get());
 
-                        return;
-                    } catch(NumberFormatException e)
-                    {
+                        gameState = State.STOPPED;
 
-                        currentPlayer.get().writer().println("Invalid input format. Please enter row and column separated by a comma.");
-                        currentPlayer.get().writer().flush();
+                        break;
+                    }
+                    catch(NullPointerException exception){
+                        System.out.println("Player with symbol " + currentPlayer.get().symbol() + "  disconnected, " + exception.getMessage());
 
+                        participants.remove(currentPlayer.get());
 
-                    } catch(ArrayIndexOutOfBoundsException e)
-                    {
-                        currentPlayer.get().writer().println("Invalid input. Please enter row and column in the range of Board.");
+                        gameState = State.STOPPED;
 
-                        currentPlayer.get().writer().flush();
-
-                    } catch(InterruptedException e)
+                        break;
+                    }
+                    catch(InterruptedException e)
                     {
                         System.out.println("Interruption while receiving moves" + e.getMessage());
+
+                        participants.remove(currentPlayer.get());
+
+                        gameState = State.STOPPED;
+
+                        break;
                     }
                 }
 
-                handleGameState(currentPlayer.get().writer());
+                handleGameState();
+
+                if(!gameState.equals(State.PLAYING))
+                {
+                    if((currentPlayerIndex == 0))
+                    {
+                        System.out.println("signaling the waiting state");
+                        player2Turn.signalAll();
+                    }
+                    else
+                    {
+                        player1Turn.signalAll();
+                    }
+                    gameLock.unlock();
+                    break;
+                }
+
                 switchTurn();
                 gameLock.unlock();
             }
 
-
-        if(instructionsSent.compareAndSet(true, false))
-        {
-            sendEndingInstructions(player1.writer(), player2.writer());
-//            sendEndingInstructions(player1.writer());
-
-        }
     }
     private void sendInstructions()
     {
@@ -234,9 +277,9 @@ public class Game
 
     }
 
-    private void printBoard(PrintWriter writer1, PrintWriter writer2) throws InterruptedException
+    private void printBoard() throws InterruptedException
     {
-        board.paint(writer1, writer2);
+        board.print(participants);
      }
 
     private boolean isGameOver()
@@ -253,7 +296,7 @@ public class Game
     private String receiveMove(Player currentPlayer) throws IOException,InterruptedException
     {
         String move;
-        currentPlayer.writer().println("Player (" + currentPlayer.seed().getIcon() + "), enter your move (row,col): ");
+        currentPlayer.writer().println("Player (" + currentPlayer.symbol().getIcon() + "), enter your move (row,col): ");
         currentPlayer.writer().flush();
         move = currentPlayer.reader().readLine();
         return move;
@@ -261,59 +304,74 @@ public class Game
 
     private boolean isValidMove(int row, int col)
     {
-        return row >= 0 && row < Board.ROWS && col >= 0 && col < Board.COLS && board.cells[row][col].content == Seed.NO_SEED;
+        return row >= 0 && row < Board.ROWS && col >= 0 && col < Board.COLS && board.cells[row][col].content == Symbol.NO_SYMBOL;
     }
 
-    private void handleGameState(PrintWriter writer)
+    private void handleGameState()
     {
         switch(gameState)
         {
             case PLAYING:
-                writer.println("PLAYING");
-                writer.flush();
+                participants.forEach(participant ->
+                {
+                    participant.writer().println("PLAYING");
+                    participant.writer().flush();
+                });
                 break;
             case DRAW:
-                writer.println("It's a draw!");
-                writer.flush();
+                participants.forEach(participant ->
+                {
+                    participant.writer().println("DRAW");
+                    participant.writer().flush();
+                });
                 break;
             case CROSS_WON:
-                writer.println("CROSS wins!");
-                writer.flush();
+                participants.forEach(participant ->
+                {
+                    participant.writer().println("CROSS_WON");
+                    participant.writer().flush();
+                });
                 break;
-            case NOUGHT_WON:
-                writer.println("NOUGHT wins!");
-                writer.flush();
+            case ZERO_WON:
+                participants.forEach(participant ->
+                {
+                    participant.writer().println("ZERO_WON");
+                    participant.writer().flush();
+                });
                 break;
+            case STOPPED:
+                informOtherUser();
         }
     }
 
-    private void sendEndingInstructions(PrintWriter writer1, PrintWriter writer2)
-    {
-        String instruction = "Game Over!!Hope You Enjoyed the game,Connect Again to Server for Starting new Game.";
-        writer1.println(instruction);
-        writer1.flush();
-        writer2.println(instruction);
-        writer2.flush();
-    }
-
-    private void informOtherUser()
-    {
-        if(currentPlayerIndex == 0)
-        {
-            player2.writer().println("Player 1 disconnected.");
-            player2.writer().println("Game is ending.");
-            player2.writer().flush();
-        }
-        else
-        {
-            player1.writer().println("Player 2 disconnected.");
-            player1.writer().println("Game is ending.");
-            player1.writer().flush();
-        }
-    }
     private void switchTurn() {
         currentPlayerIndex = (currentPlayerIndex + 1) % 2;
     }
 
+    private void informOtherUser()
+    {
+        participants.forEach(
+                (participant) -> {
+                    if(!currentPlayer.get().equals(participant))
+                    {
+                        participant.writer().println("Game can't be continued due to some server error.Connect back to server.");
+
+                        participant.writer().flush();
+                    }
+                });
+    }
+
+    private void sendEndingInstructions()
+    {
+        String instruction = "Game Over!!Hope You Enjoyed the game,Connect Again to Server for Starting new Game.";
+
+        participants.forEach(
+                (participant) ->
+                {
+                    participant.writer().println(instruction);
+
+                    participant.writer().flush();
+                });
+    }
 }
 

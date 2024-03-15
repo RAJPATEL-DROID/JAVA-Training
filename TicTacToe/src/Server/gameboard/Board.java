@@ -1,44 +1,51 @@
 package Server.gameboard;
 
-import java.io.PrintWriter;
+import Server.player.Player;
+
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Board
 {
     public static final int ROWS = 3;
     public static final int COLS = 3;
 
-
     public Cell[][] cells;
 
     /** Constructor to initialize the game board */
-    public Board() {
+    public Board()
+    {
         initGame();
     }
 
-    public void initGame() {
+    public void initGame()
+    {
         cells = new Cell[ROWS][COLS];  // allocate the array
-        for (int row = 0; row < ROWS; ++row) {
-            for (int col = 0; col < COLS; ++col) {
-                // Allocate element of the array
+
+        for (int row = 0; row < ROWS; ++row)
+        {
+            for (int col = 0; col < COLS; ++col)
+            {
                 cells[row][col] = new Cell(row, col);
             }
         }
     }
     public void newGame() {
-        for (int row = 0; row < ROWS; ++row) {
-            for (int col = 0; col < COLS; ++col) {
-                cells[row][col].newGame();  // The cells init itself
+        for (int row = 0; row < ROWS; ++row)
+        {
+            for (int col = 0; col < COLS; ++col)
+            {
+                cells[row][col].newGame();
             }
         }
     }
 
 
-    public State updateGameState(Seed player, int selectedRow, int selectedCol) {
+    public State updateGameState(Symbol player, int selectedRow, int selectedCol) {
 
         cells[selectedRow][selectedCol].content = player;
 
         if (hasWon(player, selectedRow, selectedCol)) {
-            return (player == Seed.CROSS) ? State.CROSS_WON : State.NOUGHT_WON;
+            return (player == Symbol.CROSS) ? State.CROSS_WON : State.ZERO_WON;
         } else if (isBoardFull()) {
             return State.DRAW;
         } else {
@@ -46,7 +53,7 @@ public class Board
         }
     }
 
-    private boolean hasWon(Seed player, int selectedRow, int selectedCol) {
+    private boolean hasWon(Symbol player, int selectedRow, int selectedCol) {
         return (cells[selectedRow][0].content == player &&
                 cells[selectedRow][1].content == player &&
                 cells[selectedRow][2].content == player) ||
@@ -66,7 +73,7 @@ public class Board
     private boolean isBoardFull() {
         for (int row = 0; row < ROWS; ++row) {
             for (int col = 0; col < COLS; ++col) {
-                if (cells[row][col].content == Seed.NO_SEED) {
+                if (cells[row][col].content == Symbol.NO_SYMBOL) {
                     return false;
                 }
             }
@@ -74,28 +81,40 @@ public class Board
         return true;
     }
 
-    /** The board paints itself */
-    public void paint(PrintWriter writer1,PrintWriter writer2) throws InterruptedException
+    public void print(CopyOnWriteArrayList<Player> participants) throws InterruptedException
     {
         StringBuilder boardRepresentation = new StringBuilder();
-        for (int row = 0; row < ROWS; ++row) {
-            for (int col = 0; col < COLS; ++col) {
+
+        for (int row = 0; row < ROWS; ++row)
+        {
+            for (int col = 0; col < COLS; ++col)
+            {
                 boardRepresentation.append(" ");
+
                 boardRepresentation.append(cells[row][col].content.getIcon());
+
                 boardRepresentation.append(" ");
+
                 if (col < COLS - 1) boardRepresentation.append("|");
             }
+
             boardRepresentation.append("\n");
-            if (row < ROWS - 1) {
+
+            if (row < ROWS - 1)
+            {
                 boardRepresentation.append("-----------\n");
             }
         };
 
         String boardString = boardRepresentation.toString();
-        writer1.println(boardString);
-        writer1.flush();
-        Thread.sleep(1000);
-        writer2.println(boardString);
-        writer2.flush();
+
+        participants.forEach(
+                (participant) ->
+                {
+                    participant.writer().println(boardString);
+
+                    participant.writer().flush();
+                }
+        );
     }
 }

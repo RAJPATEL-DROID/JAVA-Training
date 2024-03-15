@@ -64,7 +64,7 @@ public class GameManager
 
     public Integer validateSessionAndSendPortNo(Long sessionId) {
 
-        System.out.println("SessionId provided by the user: " + sessionId);
+//        System.out.println("SessionId provided by the user: " + sessionId);
 
         AbstractMap.SimpleEntry<Integer, GameRoom> entry = sessionIdToGameRoomMap.get(sessionId);
 

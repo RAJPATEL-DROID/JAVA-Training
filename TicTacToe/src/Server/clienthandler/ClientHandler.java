@@ -102,7 +102,6 @@ public class ClientHandler extends Thread
                 }
                 else if(inputLine.equals("2"))
                 {
-
                     writer.println("Enter Session ID : ");
 
                     writer.flush();
@@ -133,7 +132,6 @@ public class ClientHandler extends Thread
 
                             break;
                         }
-
                     }catch(NumberFormatException exception){
                         System.out.println("received null from user for session ID.");
                     }

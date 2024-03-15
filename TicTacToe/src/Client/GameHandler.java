@@ -6,14 +6,27 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GameHandler {
 
 
     public void playGame(String sessionId, String portNo,int turn) throws IOException {
-        try(Socket gameSocket = new Socket(ClientMain.SERVER_ADDRESS, Integer.parseInt(portNo)); PrintWriter writer = new PrintWriter(gameSocket.getOutputStream()); BufferedReader reader = new BufferedReader(new InputStreamReader(gameSocket.getInputStream())); BufferedReader userInputReader = new BufferedReader(new InputStreamReader(System.in)))
+        try(Socket gameSocket = new Socket(ClientMain.SERVER_ADDRESS, Integer.parseInt(portNo)); PrintWriter writer = new PrintWriter(gameSocket.getOutputStream());
+            BufferedReader reader = new BufferedReader(new InputStreamReader(gameSocket.getInputStream()));
+            BufferedReader userInputReader = new BufferedReader(new InputStreamReader(System.in)))
         {
+            String initialResponseFromGameRoom = reader.readLine();
+
+            if(initialResponseFromGameRoom.equals("Maximum number of players reached for this game room. Cannot join."))
+            {
+                System.out.println(initialResponseFromGameRoom);
+
+                System.out.println("Try connecting after some time or create new room.");
+                return;
+            }else{
+                System.out.println(initialResponseFromGameRoom);
+            }
+
             System.out.println("Playing Game!!!");
 
             writer.println(sessionId);
@@ -24,11 +37,8 @@ public class GameHandler {
 
             switch(response)
             {
-                case "Maximum number of players reached for this game room. Cannot join." ->
+                case "" ->
                 {
-                    System.out.println(response);
-
-                    System.out.println("Try connecting after some time or create new room.");
 
                 }
                 case "Session Id is invalid!!" ->
@@ -61,41 +71,73 @@ public class GameHandler {
         } catch(IOException e)
         {
             System.out.println("Error creating the Socket!!");
+        }finally
+        {
+            System.out.println("Closing connection to GameRoom...");
         }
 
     }
 
     private void gameLogic(BufferedReader reader,PrintWriter writer,BufferedReader userInputReader,int turn){
 
-        Boolean firstUserMove = true;
+        boolean firstUserMove = true;
         try
         {
             String result = "PLAYING";
 
             while(result.contains("PLAYING"))
             {
-                if( (turn == 1) && !firstUserMove){
+
+                if( (turn == 1) && !firstUserMove)
+                {
                     printBoard(reader);
-                    firstUserMove = !firstUserMove;
-                }else if( (turn == 2) && firstUserMove){
-                    printBoard(reader);
-                    firstUserMove = !firstUserMove;
+
+                    firstUserMove = true;
+
+                    String stateOfGame = reader.readLine();
+
+                    System.out.println(stateOfGame);
+
+                    if( !stateOfGame.contains("PLAYING") )
+                    {
+                        return;
+                    }
                 }
+                else if(turn == 2)
+                {
+                    printBoard(reader);
+
+                    firstUserMove = false;
+
+                    String stateOfGame = reader.readLine();
+
+                    System.out.println(stateOfGame);
+
+                    if( !stateOfGame.contains("PLAYING") )
+                    {
+                        if(!stateOfGame.contains("Game Over"))
+                        {
+                            break;
+                        }else
+                        {
+                            return;
+                        }
+                    }
+                }
+
                 takeUserMove(reader, writer, userInputReader);
 
                 String validationResult = reader.readLine();
-
+                System.out.println("validation result:" + validationResult);
                 if(validationResult == null)
                 {
                     return;
                 }
 
-                if(validationResult.contains("Try Again"))
+                if(validationResult.contains("Try again"))
                 {
-
-                    while(validationResult.contains("Try Again"))
+                    while(validationResult.contains("Try again"))
                     {
-
                         System.out.println(validationResult);
 
                         takeUserMove(reader, writer, userInputReader);
@@ -105,24 +147,35 @@ public class GameHandler {
                 }
 
                 printBoard(reader);
-                if( (turn == 1) && firstUserMove){
+
+                if( turn == 1 )
+                {
                     result = reader.readLine();
+
                     System.out.println(result);
-                    firstUserMove = !firstUserMove;
-                }else if( (turn == 2) && !firstUserMove){
+
+                    firstUserMove = false;
+                }
+                else if( turn == 2 )
+                {
                     result = reader.readLine();
+
                     System.out.println(result);
-                    firstUserMove = !firstUserMove;
+
+                    firstUserMove = true;
                 }
             }
 
-            System.out.println(result);
-
             readGameEndingInstructions(reader);
-
-        } catch(IOException e)
+        }
+        catch(IOException e)
         {
             System.err.println("Error Reading Input Stream from Server" + e.getMessage());
+
+        }
+        catch(NullPointerException exception)
+        {
+            System.out.println("Server closing abruptly!!");
         }
     }
 
@@ -132,9 +185,7 @@ public class GameHandler {
 
         while((instructions = reader.readLine()) != null)
         {
-
             System.out.println(instructions);
-
 
             if(instructions.contains("representation"))
             {
@@ -146,11 +197,18 @@ public class GameHandler {
     private static void printBoard(BufferedReader reader) throws IOException
     {
         String rows;
+
         int cntRows = 0;
+
         while((rows = reader.readLine()) != null)
         {
             System.out.println(rows);
+
+            if(rows.contains("server error")){
+                break;
+            }
             cntRows++;
+
             if(cntRows == 6)break;
         }
     }
@@ -158,9 +216,11 @@ public class GameHandler {
     private static void takeUserMove(BufferedReader reader, PrintWriter writer, BufferedReader userInputReader) throws IOException
     {
         String serverRequest = reader.readLine();
+
         if(serverRequest == null)
         {
             System.out.println("Server Disconnected");
+
             return;
         }
         System.out.println(serverRequest);
@@ -176,7 +236,6 @@ public class GameHandler {
 
     private void readGameEndingInstructions(BufferedReader reader) throws IOException
     {
-
         System.out.println(reader.readLine());
     }
 }

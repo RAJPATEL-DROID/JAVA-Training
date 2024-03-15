@@ -2,6 +2,6 @@ package Server.gameboard;
 
 public enum State
 {
-    PLAYING, DRAW, CROSS_WON, NOUGHT_WON
+    PLAYING, DRAW, CROSS_WON, ZERO_WON,STOPPED
 
 }
