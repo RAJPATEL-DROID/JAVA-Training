@@ -10,18 +10,13 @@ import java.util.Objects;
 
 public class ClientMain
 {
-
     public static final String SERVER_ADDRESS = "localhost"; // Server address
-
     static String sessionId;
-
     static String portNo;
-
     private static final int SERVER_PORT = 12345; // Server port
 
     public static void main(String[] args)
     {
-
         try(Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT); BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream())); PrintWriter writer = new PrintWriter(socket.getOutputStream()); BufferedReader userInputReader = new BufferedReader(new InputStreamReader(System.in)))
         {
             System.out.println("Connected to server.");
@@ -38,22 +33,17 @@ public class ClientMain
 
             while(shouldContinue)
             {
-
-
                 if(Objects.equals(userChoice, "1"))
                 {
-
                     while((instruction = reader.readLine()) != null)
                     {
                         System.out.println(instruction);
 
                         if(instruction.contains("Port"))
                         {
-
                             portNo = (String) Arrays.stream(instruction.split(":")).toArray()[1];
 
                             System.out.println(portNo);
-
                         }
 
                         if(instruction.contains("sessionId"))
@@ -72,7 +62,6 @@ public class ClientMain
                 }
                 else if(userChoice.equals("2"))
                 {
-
                     System.out.println(reader.readLine());
 
                     System.out.println("----------------");
@@ -140,7 +129,6 @@ public class ClientMain
         // Read server instructions
         try
         {
-
             String instruction;
 
             while((instruction = reader.readLine()) != null)
