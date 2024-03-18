@@ -1,9 +1,9 @@
 package Server.game;
 
-import Server.gameboard.Board;
-import Server.gameboard.State;
+import Server.game.gameutils.Board;
+import Server.game.gameutils.State;
 import Server.player.Player;
-import Server.game.utils.*;
+import Server.game.gameutils.*;
 import Server.util.LoggingUtils;
 
 import java.io.IOException;
@@ -39,7 +39,6 @@ public class Game
 
     private String player1ThreadName;
 
-
     public Game()
     {
         this.currentPlayerIndex = 0;
@@ -54,21 +53,20 @@ public class Game
 
     public void addPlayerAndStartGaming(Player player)
     {
-        gameLock.lock();
-        try
-        {
+        try {
             participants.add(player);
 
-            if(participants.size() == 1)
+            gameLock.lock();
+
+            if (participants.size() == 1)
             {
                 player1ThreadName = Thread.currentThread().getName();
 
                 logger.info("Player 1 is on Thread : " + Thread.currentThread().getName());
 
-                while(participants.size() < 2)
+                while (participants.size() < 2)
                 {
                     player1Turn.await();
-
                 }
             }
             else
@@ -77,30 +75,10 @@ public class Game
 
                 player1Turn.signal();
             }
-        } catch(InterruptedException exception)
-        {
 
-            logger.info("Error while awaiting or signaling thread" + exception.getMessage());
-
-            logger.info("Stopping the execution of play");
-
-            return;
-        } catch(IllegalMonitorStateException exception)
-        {
-
-            logger.info("Thread trying to notify/wait on object without acquiring lock : " + exception.getMessage());
-
-            logger.info("Stopping the execution of play");
-
-            return;
-        } finally
-        {
             gameLock.unlock();
-        }
 
-        try
-        {
-            if(instructionsSent.compareAndSet(false, true))
+            if (instructionsSent.compareAndSet(false, true))
             {
                 Print.initialGameRules(participants);
 
@@ -109,8 +87,9 @@ public class Game
 
             start();
 
-            if(gameState != State.STOPPED){
-                if(instructionsSent.compareAndSet(true, false))
+            if (gameState != State.STOPPED)
+            {
+                if (instructionsSent.compareAndSet(true, false))
                 {
                     System.out.println(Thread.currentThread().getName());
 
@@ -123,11 +102,16 @@ public class Game
             }
 
             System.out.println(Thread.currentThread().getName());
-
         }
-        catch(InterruptedException exception)
+        catch (InterruptedException exception)
         {
-            logger.info("Game Interrupted while waiting for the Thread" + exception.getMessage());
+            logger.info("Stopping the execution of play"  + exception);
+
+            logger.info(exception.getMessage());
+        }
+        catch (IllegalMonitorStateException exception)
+        {
+            logger.info("Thread trying to notify/wait on object without acquiring lock : " + exception.getMessage());
         }
     }
 
@@ -160,7 +144,6 @@ public class Game
 
             boolean validMove = false;
 
-            // Receive move from the current player
             while(!validMove)
             {
                 try
@@ -258,7 +241,6 @@ public class Game
 
                 break;
             }
-
         }
     }
 }

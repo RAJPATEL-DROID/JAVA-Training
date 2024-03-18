@@ -1,7 +1,7 @@
 package Server.gameroom;
 
 import Server.game.Game;
-import Server.gameboard.Symbol;
+import Server.game.gameutils.Symbol;
 import Server.player.Player;
 import Server.util.LoggingUtils;
 

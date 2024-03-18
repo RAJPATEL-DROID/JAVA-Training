@@ -8,10 +8,9 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class GameHandler {
-
-
     public void playGame(String sessionId, String portNo,int turn) throws IOException {
-        try(Socket gameSocket = new Socket(ClientMain.SERVER_ADDRESS, Integer.parseInt(portNo)); PrintWriter writer = new PrintWriter(gameSocket.getOutputStream());
+        try(Socket gameSocket = new Socket(ClientMain.SERVER_ADDRESS, Integer.parseInt(portNo));
+            PrintWriter writer = new PrintWriter(gameSocket.getOutputStream());
             BufferedReader reader = new BufferedReader(new InputStreamReader(gameSocket.getInputStream()));
             BufferedReader userInputReader = new BufferedReader(new InputStreamReader(System.in)))
         {
@@ -23,7 +22,9 @@ public class GameHandler {
 
                 System.out.println("Try connecting after some time or create new room.");
                 return;
-            }else{
+            }
+            else
+            {
                 System.out.println(initialResponseFromGameRoom);
             }
 
@@ -61,17 +62,19 @@ public class GameHandler {
                     gameLogic(reader,writer,userInputReader,turn);
                 }
             }
-        } catch(UnknownHostException e)
+        }
+        catch(UnknownHostException e)
         {
             System.out.println("IP address of the host could not be determined.");
-        } catch(IOException e)
+        }
+        catch(IOException e)
         {
             System.out.println("Error creating the Socket!!");
-        }finally
+        }
+        finally
         {
             System.out.println("Closing connection to GameRoom...");
         }
-
     }
 
     private void gameLogic(BufferedReader reader,PrintWriter writer,BufferedReader userInputReader,int turn){
@@ -208,7 +211,8 @@ public class GameHandler {
         {
             System.out.println(rows);
 
-            if(rows.contains("Connect back to server!!")){
+            if(rows.contains("Connect back to server!!"))
+            {
                 return false;
             }
             cntRows++;

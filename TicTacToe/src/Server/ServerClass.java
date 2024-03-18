@@ -3,7 +3,6 @@ package Server;
 import Server.clienthandler.ClientHandler;
 import Server.gamemanager.GameManager;
 import Server.util.LoggingUtils;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -34,15 +33,14 @@ public class ServerClass
 
                 logger.info("Client with id : " + clientId + " connected.");
 
-
                 ClientHandler clientHandler = new ClientHandler(userSocket, gameManager, clientId);
 
                 clientHandlerThreads.execute(clientHandler);
             }
         }
-        catch(IOException e)
+        catch(IOException exception)
         {
-            System.out.println();
+            logger.warning("Server having problem on waiting for connection"  + exception.getMessage());
         }
     }
 }

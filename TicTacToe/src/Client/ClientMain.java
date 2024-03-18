@@ -17,7 +17,10 @@ public class ClientMain
 
     public static void main(String[] args)
     {
-        try(Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT); BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream())); PrintWriter writer = new PrintWriter(socket.getOutputStream()); BufferedReader userInputReader = new BufferedReader(new InputStreamReader(System.in)))
+        try(Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            PrintWriter writer = new PrintWriter(socket.getOutputStream());
+            BufferedReader userInputReader = new BufferedReader(new InputStreamReader(System.in)))
         {
             System.out.println("Connected to server.");
 
@@ -113,12 +116,12 @@ public class ClientMain
 
                 }
             }
-        } catch(IOException e)
+        }
+        catch(IOException e)
         {
-
             System.out.println("Server refused connection, Try After sometime!!");
-
-        }finally
+        }
+        finally
         {
             System.out.println("Closing connection with Server....");
         }
@@ -126,7 +129,6 @@ public class ClientMain
 
     private static void readServerInstructions(BufferedReader reader)
     {
-        // Read server instructions
         try
         {
             String instruction;
@@ -140,7 +142,8 @@ public class ClientMain
 
                 System.out.println(instruction);
             }
-        } catch(IOException e)
+        }
+        catch(IOException e)
         {
             System.out.println("Error in reading Reader Stream from Server");
         }
@@ -157,7 +160,8 @@ public class ClientMain
             writer.println(user);
 
             writer.flush();
-        } catch(IOException e)
+        }
+        catch(IOException e)
         {
             System.out.println("Error in reading Standard Input");
         }
