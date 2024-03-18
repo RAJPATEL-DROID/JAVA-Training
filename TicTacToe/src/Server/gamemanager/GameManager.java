@@ -1,16 +1,21 @@
 package Server.gamemanager;
 
 import Server.gameroom.GameRoom;
+import Server.util.LoggingUtils;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Logger;
 
 public class GameManager
 {
     private final Map<Long, AbstractMap.SimpleEntry<Integer, GameRoom>> sessionIdToGameRoomMap = new HashMap<>();
+
+    private static final Logger logger = LoggingUtils.getLogger();
+
     private final ExecutorService threadsOfGameRooms;
 
     private static Integer arrayIndex =-1;
@@ -40,8 +45,6 @@ public class GameManager
 
         String roomId = sessionId + "-" + portNo.toString();
 
-        System.out.println(roomId);
-
         if(portNo != -1)
         {
             GameRoom gameRoomThread = new GameRoom(roomId);
@@ -63,8 +66,6 @@ public class GameManager
     }
 
     public Integer validateSessionAndSendPortNo(Long sessionId) {
-
-//        System.out.println("SessionId provided by the user: " + sessionId);
 
         AbstractMap.SimpleEntry<Integer, GameRoom> entry = sessionIdToGameRoomMap.get(sessionId);
 

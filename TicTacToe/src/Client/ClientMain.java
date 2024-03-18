@@ -10,7 +10,7 @@ import java.util.Objects;
 
 public class ClientMain
 {
-    public static final String SERVER_ADDRESS = "localhost"; // Server address
+    public static final String SERVER_ADDRESS = "10.20.40.197"; // Server address
     static String sessionId;
     static String portNo;
     private static final int SERVER_PORT = 12345; // Server port

@@ -3,6 +3,7 @@ package Server.gameroom;
 import Server.game.Game;
 import Server.gameboard.Symbol;
 import Server.player.Player;
+import Server.util.LoggingUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,12 +13,15 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
 
 public class GameRoom extends Thread
 {
     private final Integer portNo;
 
     private final String sessionId;
+
+    private static final Logger logger = LoggingUtils.getLogger();
 
     private final AtomicInteger participants= new AtomicInteger(0);
 
@@ -27,11 +31,7 @@ public class GameRoom extends Thread
     {
         List<String> lst = List.of(gameRoomId.split("-"));
 
-        System.out.println("Room created with Id : " + gameRoomId);
-
         this.sessionId = lst.get(0);
-
-        System.out.println("sessionId : " + sessionId);
 
         this.portNo = Integer.valueOf(lst.get(1));
 
@@ -43,34 +43,43 @@ public class GameRoom extends Thread
     {
         try(ServerSocket gameRoomSocket = new ServerSocket(portNo))
         {
-            System.out.println("Game room started on port " + portNo);
+            logger.info("Game room started on port " + portNo);
 
-            System.out.println(Thread.currentThread().getName());
             while(true)
             {
                 Socket playerSocket = gameRoomSocket.accept();
-                System.out.println(playerSocket.getRemoteSocketAddress());
+
+                var playerId = playerSocket.getRemoteSocketAddress().toString().split(":")[1];
+
+                logger.info("Player with ID : " + playerId + " connected on game room with session id " + this.sessionId );
+
                 new Thread(()->{
                     try
                     {
-                        validatePlayers(playerSocket);
+                        validatePlayers(playerSocket,playerId);
                     }
                     catch(Exception exception)
                     {
-                        System.out.println("Player with Id : " + playerSocket.getRemoteSocketAddress().toString().split(":")[1]  + " disconnected from game room");
+                        logger.info("Error with player id "  + playerId);
+                        logger.info(exception.getMessage());
                     }finally
                     {
                         try
                         {
-                            System.out.println("Player with Id : " + playerSocket.getRemoteSocketAddress().toString().split(":")[1] + " disconnected from game room");
                             if (!playerSocket.isClosed())
                             {
+                                logger.info("Player with Id : " + playerId + " disconnected from game room");
+
                                 playerSocket.close();
+
+                            }else{
+                                logger.info("Player with Id : " + playerId + " disconnected from game room");
                             }
                         }
                         catch(IOException exception)
                         {
-                            System.out.println("error while closing player "+ playerSocket.getRemoteSocketAddress().toString().split(":")[1] + "'s socket : "+ exception.getMessage());
+                            logger.info("error while closing player "+ playerId + "'s socket.");
+                            logger.info("Error : " + exception.getMessage());
                         }
                     }
                 }).start();
@@ -78,11 +87,11 @@ public class GameRoom extends Thread
         }
         catch(Exception e)
         {
-            System.err.println("Error starting game room: " + e.getMessage());
+            logger.severe("Error in starting game room with id : " + this.sessionId);
         }
     }
 
-    private void validatePlayers(Socket playerSocket) throws IOException
+    private void validatePlayers(Socket playerSocket, String playerId) throws IOException
     {
             try(BufferedReader reader = new BufferedReader(new InputStreamReader(playerSocket.getInputStream()));
                 PrintWriter writer = new PrintWriter(playerSocket.getOutputStream()))
@@ -98,6 +107,7 @@ public class GameRoom extends Thread
                 else
                 {
                     writer.println("Connected to Game Room");
+
                     writer.flush();
                 }
 
@@ -105,14 +115,14 @@ public class GameRoom extends Thread
 
                 if(!ssid.equals(sessionId))
                 {
-                    System.out.println("Player " + playerSocket.getRemoteSocketAddress().toString().split(":")[1] + " has wromg session id");
+                    logger.info("Player with id " + playerId + " has wrong session id");
+
                     writer.println("Session Id is invalid!!");
 
                     writer.flush();
 
                     return;
                 }
-
 
                 Player player = new Player(reader,writer,(participants.getAndIncrement() < 1)? Symbol.CROSS: Symbol.ZERO);
 
@@ -121,8 +131,11 @@ public class GameRoom extends Thread
                 writer.flush();
 
                 handlePlayer(player);
-            }catch(NullPointerException exception){
-                System.out.println("Client Disconnected" + exception.getMessage());
+            }
+            catch(NullPointerException exception)
+            {
+                logger.info("Player with id " + playerId  + " disconnected.");
+                logger.info("Error : " + exception.getMessage());
             }
     }
 

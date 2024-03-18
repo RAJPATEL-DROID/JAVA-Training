@@ -37,10 +37,6 @@ public class GameHandler {
 
             switch(response)
             {
-                case "" ->
-                {
-
-                }
                 case "Session Id is invalid!!" ->
                 {
                     System.out.println(response);
@@ -90,7 +86,10 @@ public class GameHandler {
 
                 if( (turn == 1) && !firstUserMove)
                 {
-                    printBoard(reader);
+                    if(!printBoard(reader))
+                    {
+                        return;
+                    };
 
                     firstUserMove = true;
 
@@ -100,12 +99,19 @@ public class GameHandler {
 
                     if( !stateOfGame.contains("PLAYING") )
                     {
+                        if( !stateOfGame.contains("STOPPED") )
+                        {
+                            readGameEndingInstructions(reader);
+                        }
                         return;
                     }
                 }
                 else if(turn == 2)
                 {
-                    printBoard(reader);
+                    if(!printBoard(reader))
+                    {
+                        return;
+                    };
 
                     firstUserMove = false;
 
@@ -115,21 +121,17 @@ public class GameHandler {
 
                     if( !stateOfGame.contains("PLAYING") )
                     {
-                        if(!stateOfGame.contains("Game Over"))
+                        if( !stateOfGame.contains("STOPPED") )
                         {
-                            break;
-                        }else
-                        {
-                            return;
+                            readGameEndingInstructions(reader);
                         }
+                        return;
                     }
                 }
 
                 takeUserMove(reader, writer, userInputReader);
 
                 String validationResult = reader.readLine();
-
-                //                System.out.println("validation result:" + validationResult);
 
                 if(validationResult == null)
                 {
@@ -196,7 +198,7 @@ public class GameHandler {
         }
     }
 
-    private static void printBoard(BufferedReader reader) throws IOException
+    private static boolean printBoard(BufferedReader reader) throws IOException
     {
         String rows;
 
@@ -206,13 +208,14 @@ public class GameHandler {
         {
             System.out.println(rows);
 
-            if(rows.contains("server error")){
-                break;
+            if(rows.contains("Connect back to server!!")){
+                return false;
             }
             cntRows++;
 
             if(cntRows == 6)break;
         }
+        return true;
     }
 
     private static void takeUserMove(BufferedReader reader, PrintWriter writer, BufferedReader userInputReader) throws IOException

@@ -1,29 +1,38 @@
 package Server.clienthandler;
 
 import Server.gamemanager.GameManager;
+import Server.util.LoggingUtils;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class ClientHandler extends Thread
 {
+
+    private static final Logger logger = LoggingUtils.getLogger();
 
     private final Socket clientSocket;
 
     private final GameManager gameManager;
 
+    private final String clientId;
+
     private BufferedReader reader;
 
     private PrintWriter writer;
 
-    public ClientHandler(Socket clientsocket, GameManager gameManager)
+    public ClientHandler(Socket clientsocket, GameManager gameManager, String clientId)
     {
         this.clientSocket = clientsocket;
 
         this.gameManager = gameManager;
+
+        this.clientId = clientId;
 
         try
         {
@@ -33,7 +42,7 @@ public class ClientHandler extends Thread
         }
         catch(IOException e)
         {
-            System.out.println("Error while reading and writing to user stream");
+            logger.info("Error while reading and writing to user stream for client with id : " + clientsocket.getRemoteSocketAddress().toString().split(":")[1]);
         }
     }
 
@@ -46,22 +55,20 @@ public class ClientHandler extends Thread
 
             sendInstruction();
 
-            System.out.println("Instructions sent");
-
             processInput();
-
         }
         finally
         {
             try
             {
                 clientSocket.close();
+                logger.info("Client with id : " + clientId + " disconnected");
             }
             catch(IOException exception)
             {
+                logger.info("Error while closing socket for client with id : " + this.clientId);
 
-                System.out.println("error while closing the client socket" + exception.getMessage());
-
+                logger.info("Error : "  + exception.getMessage());
             }
         }
     }
@@ -81,9 +88,6 @@ public class ClientHandler extends Thread
 
     private void processInput()
     {
-
-        System.out.println("Taking Input");
-
         String inputLine;
 
         try
@@ -99,14 +103,14 @@ public class ClientHandler extends Thread
                     writer.println("Here is your sessionId:" + ids.get(1));
 
                     writer.flush();
+
+                    logger.info("New Room created with session ID : " + ids.get(1)  + " on port " + ids.get(0));
                 }
                 else if(inputLine.equals("2"))
                 {
                     writer.println("Enter Session ID : ");
 
                     writer.flush();
-
-                    System.out.println("----------------");
 
                     String sessionId = reader.readLine();
                     try
@@ -121,7 +125,7 @@ public class ClientHandler extends Thread
 
                             sendInstruction();
 
-                            System.out.println("Instructions Sent Again : ");
+                            logger.info("Instructions sent again for client Id : " + this.clientId);
 
                         }
                         else
@@ -133,7 +137,8 @@ public class ClientHandler extends Thread
                             break;
                         }
                     }catch(NumberFormatException exception){
-                        System.out.println("received null from user for session ID.");
+                        logger.info("Received null from client : " + this.clientSocket.getRemoteSocketAddress().toString().split(":")[1]);
+
                     }
                 }
                 else
@@ -144,12 +149,15 @@ public class ClientHandler extends Thread
 
                     sendInstruction();
 
-                    System.out.println("Instructions Sent Again : ");
+                    logger.info("Instructions sent again for client Id : " + this.clientId);
                 }
             }
-        } catch(IOException e)
+        }
+        catch(IOException e)
         {
             writer.println("Error Reading the Input");
+
+            System.out.println("Error taking input from the client Id : " + this.clientId);
         }
     }
 

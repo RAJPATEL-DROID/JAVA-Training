@@ -1,0 +1,34 @@
+Mar 18, 2024 5:33:36 PM Server.ServerClass main
+INFO: Client with id : 54488 connected.
+Mar 18, 2024 5:33:38 PM Server.ServerClass main
+INFO: Client with id : 54502 connected.
+Mar 18, 2024 5:33:38 PM Server.gameroom.GameRoom run
+INFO: Game room started on port 49152
+Mar 18, 2024 5:33:38 PM Server.clienthandler.ClientHandler processInput
+INFO: New Room created with session ID : 1000 on port 49152
+Mar 18, 2024 5:33:38 PM Server.gameroom.GameRoom run
+INFO: Player with ID : 33234 connected on game room with session id 1000
+Mar 18, 2024 5:33:38 PM Server.game.Game addPlayerAndStartGaming
+INFO: Player 1 is on Thread : Thread-3
+Mar 18, 2024 5:33:42 PM Server.clienthandler.ClientHandler run
+INFO: Client with id : 54502 disconnected
+Mar 18, 2024 5:33:42 PM Server.gameroom.GameRoom run
+INFO: Player with ID : 33238 connected on game room with session id 1000
+Mar 18, 2024 5:33:42 PM Server.game.Game addPlayerAndStartGaming
+INFO: Player 2 is on Thread : Thread-4
+Mar 18, 2024 5:33:42 PM Server.game.Game start
+INFO: Currently Thread : Thread-3's turn is to take input
+Mar 18, 2024 5:33:42 PM Server.game.Game start
+INFO: It's turn of player with symbol of CROSS
+Mar 18, 2024 5:33:46 PM Server.game.Game start
+INFO: Currently Thread : Thread-4's turn is to take input
+Mar 18, 2024 5:33:46 PM Server.game.Game start
+INFO: It's turn of player with symbol of ZERO
+Mar 18, 2024 5:33:46 PM Server.game.Game start
+INFO: Player with symbol ZERO  disconnected, Cannot invoke "String.split(String)" because "move" is null
+Mar 18, 2024 5:33:46 PM Server.gameroom.GameRoom lambda$run$0
+INFO: Player with Id : 33234 disconnected from game room
+Mar 18, 2024 5:33:46 PM Server.clienthandler.ClientHandler run
+INFO: Client with id : 54488 disconnected
+Mar 18, 2024 5:33:46 PM Server.gameroom.GameRoom lambda$run$0
+INFO: Player with Id : 33238 disconnected from game room
