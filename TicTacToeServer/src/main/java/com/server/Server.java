@@ -13,13 +13,13 @@ import java.util.logging.Logger;
 
 public class Server
 {
-    private static ConfigReader configReader = new ConfigReader();
+    private static final ConfigReader configReader = new ConfigReader();
+
     private static final int SERVER_PORT = configReader.get_SERVER_PORT();
 
     private static final Logger logger = LoggingUtils.getServerLogger();
 
     private static final ExecutorService clientHandlerThreads = Executors.newCachedThreadPool();
-
 
     public static void main(String[] args)
     {

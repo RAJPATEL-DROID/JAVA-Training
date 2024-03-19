@@ -1,13 +1,13 @@
 package com.tictactoe;
 
 import com.tictactoe.utils.ConfigReader;
-
+import com.tictactoe.utils.LoggingUtils;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 public class ClientMain
 {
@@ -17,18 +17,25 @@ public class ClientMain
 
     private static final int SERVER_PORT = configReader.get_SERVER_PORT();
 
-    static String sessionId;
+    private static final Logger logger = LoggingUtils.getClientLogger();
 
-    static String portNo;
+    private static String sessionId;
+
+    private static String portNo;
 
     public static void main(String[] args)
     {
         try(Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
+
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
             PrintWriter writer = new PrintWriter(socket.getOutputStream());
-            BufferedReader userInputReader = new BufferedReader(new InputStreamReader(System.in)))
+
+            BufferedReader userInputReader = new BufferedReader(new InputStreamReader(System.in))  )
         {
             System.out.println("Connected to server.");
+
+            logger.info("Connected to server");
 
             String instruction;
 
@@ -87,6 +94,8 @@ public class ClientMain
                         {
                             System.out.println(instruction);
 
+                            logger.info(instruction);
+
                             readServerInstructions(reader);
 
                             userChoice = takeUserInput(userChoice, userInputReader, writer);
@@ -96,11 +105,10 @@ public class ClientMain
 
                         if(instruction.contains("Port No of GameRoom :"))
                         {
-                            System.out.println(instruction);
 
                             portNo = (String) Arrays.stream(instruction.split(":")).toArray()[1];
 
-                            System.out.println(portNo);
+                            System.out.println(instruction + " " +  portNo);
 
                             shouldContinue = false;
 
@@ -119,17 +127,20 @@ public class ClientMain
                     readServerInstructions(reader);
 
                     userChoice = takeUserInput(userChoice, userInputReader, writer);
-
                 }
             }
         }
-        catch(IOException e)
+        catch(Exception exception)
         {
             System.out.println("Server refused connection, Try After sometime!!");
+
+            logger.severe(exception.getMessage());
         }
         finally
         {
-            System.out.println("Closing connection with Server....");
+            System.out.println("Closing connection with server....");
+
+            logger.info("Connection closed with server.");
         }
     }
 
@@ -149,9 +160,11 @@ public class ClientMain
                 System.out.println(instruction);
             }
         }
-        catch(IOException e)
+        catch(Exception exception)
         {
             System.out.println("Error in reading Reader Stream from Server");
+
+            logger.severe(exception.getMessage());
         }
     }
 
@@ -167,13 +180,13 @@ public class ClientMain
 
             writer.flush();
         }
-        catch(IOException e)
+        catch(Exception exception)
         {
             System.out.println("Error in reading Standard Input");
+
+            logger.severe(exception.getMessage());
         }
 
         return user;
     }
-
-
 }

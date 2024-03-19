@@ -78,7 +78,7 @@ public class Game
 
             gameLock.unlock();
 
-            if (instructionsSent.compareAndSet(false, true) && !Thread.currentThread().getName().equals(player1ThreadName))
+            if (!Thread.currentThread().getName().equals(player1ThreadName) && instructionsSent.compareAndSet(false, true))
             {
                 Print.initialGameRules(participants);
 
@@ -91,8 +91,6 @@ public class Game
             {
                 if (instructionsSent.compareAndSet(true, false))
                 {
-                    System.out.println(Thread.currentThread().getName());
-
                     Print.endingInstructions(participants);
                 }
                 else

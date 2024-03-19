@@ -1,18 +1,26 @@
 package com.tictactoe;
 
+import com.tictactoe.utils.LoggingUtils;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.logging.Logger;
 
 public class GameHandler {
+
+    private static final Logger logger = LoggingUtils.getGameHandlerLogger();
     public void playGame(String sessionId, String portNo,int turn) throws IOException {
         try(Socket gameSocket = new Socket(ClientMain.SERVER_ADDRESS, Integer.parseInt(portNo));
+
             PrintWriter writer = new PrintWriter(gameSocket.getOutputStream());
+
             BufferedReader reader = new BufferedReader(new InputStreamReader(gameSocket.getInputStream()));
-            BufferedReader userInputReader = new BufferedReader(new InputStreamReader(System.in)))
+
+            BufferedReader userInputReader = new BufferedReader(new InputStreamReader(System.in))   )
         {
             String initialResponseFromGameRoom = reader.readLine();
 
@@ -21,6 +29,9 @@ public class GameHandler {
                 System.out.println(initialResponseFromGameRoom);
 
                 System.out.println("Try connecting after some time or create new room.");
+
+                logger.info("Game room has reached it's limit.");
+
                 return;
             }
             else
@@ -44,6 +55,8 @@ public class GameHandler {
 
                     System.out.println("Try connecting with correct session Id.");
 
+                    logger.warning("Session Id invalid");
+
                 }
                 case "Welcome to Game" ->
                 {
@@ -63,17 +76,17 @@ public class GameHandler {
                 }
             }
         }
-        catch(UnknownHostException e)
+        catch(Exception exception)
         {
-            System.out.println("IP address of the host could not be determined.");
-        }
-        catch(IOException e)
-        {
-            System.out.println("Error creating the Socket!!");
+            System.out.println("Something unwanted occurred, please try again after sometime.");
+
+            logger.severe(exception.getMessage() + " " + exception);
         }
         finally
         {
             System.out.println("Closing connection to GameRoom...");
+
+            logger.info("Connection closed with GameRoom");
         }
     }
 
@@ -175,14 +188,11 @@ public class GameHandler {
 
             readGameEndingInstructions(reader);
         }
-        catch(IOException e)
+        catch(Exception exception)
         {
-            System.err.println("Error Reading Input Stream from Server" + e.getMessage());
+            System.out.println("Game room ended abruptly!!");
 
-        }
-        catch(NullPointerException exception)
-        {
-            System.out.println("Server closing abruptly!!");
+            logger.info(exception + " " + exception.getMessage());
         }
     }
 
