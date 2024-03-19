@@ -2,7 +2,6 @@ package com.server.utils;
 
 import org.json.JSONObject;
 import org.json.JSONTokener;
-
 import java.io.FileReader;
 import java.util.logging.Logger;
 
@@ -17,13 +16,13 @@ public class ConfigReader {
 
     private String JOIN_GAME_ROOM_CHOICE;
 
-    private static final Logger logger = LoggingUtils.getLogger();
+    private static final Logger logger = LoggingUtils.getServerLogger();
 
-    public ConfigReader(String filePath)
+    public ConfigReader()
     {
         try
         {
-            FileReader fileReader = new FileReader(filePath);
+            FileReader fileReader = new FileReader("src/main/java/com/server/utils/config.json");
 
             JSONTokener jsonTokener = new JSONTokener(fileReader);
 
@@ -51,18 +50,17 @@ public class ConfigReader {
     }
 
     // Getters
-    public int getSERVER_PORT()
+    public int get_SERVER_PORT()
     {
-        System.out.println(SERVER_PORT);
         return SERVER_PORT;
     }
 
-    public int getFIRST_PORT_OF_GAME_ROOM()
+    public int get_FIRST_PORT_OF_GAME_ROOM()
     {
         return FIRST_PORT_OF_GAME_ROOM;
     }
 
-    public int getLAST_PORT_OF_GAMEROOM()
+    public int get_LAST_PORT_OF_GAMEROOM()
     {
         return LAST_PORT_OF_GAMEROOM;
     }

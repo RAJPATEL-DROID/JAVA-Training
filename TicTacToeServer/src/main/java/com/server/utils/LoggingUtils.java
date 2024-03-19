@@ -1,36 +1,73 @@
 package com.server.utils;
+import com.server.clienthandler.ClientHandler;
+import com.server.game.Game;
+import com.server.gameroom.GameRoom;
 
 import java.io.IOException;
-import java.util.logging.*;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 public class LoggingUtils {
-    private static final Logger logger = Logger.getLogger(LoggingUtils.class.getName());
+    private static final Logger serverLogger = Logger.getLogger(LoggingUtils.class.getName());
+    private static final Logger clientHandlerLogger = Logger.getLogger(ClientHandler.class.getName());
+    private static final Logger gameRoomLogger = Logger.getLogger(GameRoom.class.getName());
+    private static final Logger gameLogger = Logger.getLogger(Game.class.getName());
 
     static {
         try
         {
-            FileHandler fileHandler = new FileHandler("Server.log", false);
+            configureLogger(serverLogger, "server.log");
 
-            fileHandler.setFormatter(new SimpleFormatter());
+            configureLogger(clientHandlerLogger, "clienthandler.log");
 
-            logger.addHandler(fileHandler);
+            configureLogger(gameRoomLogger, "gameroom.log");
 
+            configureLogger(gameLogger, "game.log");
+
+            // Remove the default console handlers from the root logger
             Logger rootLogger = LogManager.getLogManager().getLogger("");
 
             Handler[] handlers = rootLogger.getHandlers();
-
-            for (Handler handler : handlers)
+            for(Handler handler : handlers)
             {
-                    rootLogger.removeHandler(handler);
+                rootLogger.removeHandler(handler);
             }
         }
-        catch (IOException exception)
+        catch (IOException e)
         {
-            System.out.println("Error in initiating logger" + exception.getMessage());
+            System.out.println("Error while configuring the logger");
         }
     }
 
-    public static Logger getLogger() {
-        return logger;
+    private static void configureLogger(Logger logger, String logFileName) throws IOException
+    {
+        FileHandler fileHandler = new FileHandler(logFileName, false);
+
+        fileHandler.setFormatter(new SimpleFormatter());
+
+        logger.addHandler(fileHandler);
+    }
+
+    public static Logger getServerLogger()
+    {
+        return serverLogger;
+    }
+
+    public static Logger getClientHandlerLogger()
+    {
+        return clientHandlerLogger;
+    }
+
+    public static Logger getGameRoomLogger()
+    {
+        return gameRoomLogger;
+    }
+
+    public static Logger getGameLogger()
+    {
+        return gameLogger;
     }
 }

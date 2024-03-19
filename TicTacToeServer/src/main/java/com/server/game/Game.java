@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 
 public class Game
 {
-    private static final Logger logger = LoggingUtils.getLogger();
+    private static final Logger logger = LoggingUtils.getGameLogger();
 
     private int currentPlayerIndex;
 
@@ -78,7 +78,7 @@ public class Game
 
             gameLock.unlock();
 
-            if (instructionsSent.compareAndSet(false, true))
+            if (instructionsSent.compareAndSet(false, true) && !Thread.currentThread().getName().equals(player1ThreadName))
             {
                 Print.initialGameRules(participants);
 
@@ -100,8 +100,6 @@ public class Game
                     Thread.sleep(2000);
                 }
             }
-
-            System.out.println(Thread.currentThread().getName());
         }
         catch (InterruptedException exception)
         {
@@ -117,10 +115,10 @@ public class Game
 
     public void start() throws InterruptedException
     {
-        while(GameLogic.isGameOver(gameState))
+        while(GameEngine.isGameOver(gameState))
         {
 
-            currentPlayer.set(GameLogic.getCurrentPlayer(currentPlayerIndex, participants));
+            currentPlayer.set(GameEngine.getCurrentPlayer(currentPlayerIndex, participants));
 
             gameLock.lock();
 
@@ -152,13 +150,13 @@ public class Game
 
                     logger.info("It's turn of player with symbol of " + currentPlayer.get().symbol());
 
-                    String move = GameLogic.receiveMove(currentPlayer.get());
+                    String move = GameEngine.receiveMove(currentPlayer.get());
 
                     int row = Integer.parseInt(move.split(",")[0]);
 
                     int col = Integer.parseInt(move.split(",")[1]);
 
-                    if(GameLogic.isValidMove(board, row, col))
+                    if(GameEngine.isValidMove(board, row, col))
                     {
                         gameState = board.updateGameState(currentPlayer.get().symbol(), row, col);
 
@@ -217,11 +215,11 @@ public class Game
                 }
             }
 
-            GameLogic.handleGameState(currentPlayerIndex, gameState, participants);
+            GameEngine.handleGameState(currentPlayerIndex, gameState, participants);
 
             if(gameState == State.PLAYING)
             {
-                currentPlayerIndex = GameLogic.switchTurn(currentPlayerIndex);
+                currentPlayerIndex = GameEngine.switchTurn(currentPlayerIndex);
 
                 gameLock.unlock();
 

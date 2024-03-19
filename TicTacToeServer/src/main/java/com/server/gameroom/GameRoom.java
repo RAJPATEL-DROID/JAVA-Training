@@ -2,6 +2,7 @@ package com.server.gameroom;
 
 import com.server.game.Game;
 import com.server.game.gameutils.Symbol;
+import com.server.gamemanager.GameManager;
 import com.server.player.Player;
 import com.server.utils.LoggingUtils;
 
@@ -12,6 +13,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
@@ -21,19 +23,21 @@ public class GameRoom extends Thread
 
     private final String sessionId;
 
-    private static final Logger logger = LoggingUtils.getLogger();
+    private static final Logger logger = LoggingUtils.getGameRoomLogger();
 
     private final AtomicInteger participants= new AtomicInteger(0);
 
     private final Game game;
 
+    AtomicBoolean shouldStop = new AtomicBoolean(false);
+
+    private static ServerSocket gameRoomSocket;
+
     public GameRoom(String gameRoomId)
     {
-        List<String> lst = List.of(gameRoomId.split("-"));
+        this.sessionId = gameRoomId.split("-")[0];
 
-        this.sessionId = lst.get(0);
-
-        this.portNo = Integer.valueOf(lst.get(1));
+        this.portNo = Integer.valueOf(gameRoomId.split("-")[1]);
 
         game = new Game();
     }
@@ -41,11 +45,13 @@ public class GameRoom extends Thread
     @Override
     public void run()
     {
-        try(ServerSocket gameRoomSocket = new ServerSocket(portNo))
+        try
         {
+            gameRoomSocket = new ServerSocket(portNo);
+
             logger.info("Game room started on port " + portNo);
 
-            while(true)
+            while(!shouldStop.get())
             {
 
                 Socket playerSocket = gameRoomSocket.accept();
@@ -54,7 +60,8 @@ public class GameRoom extends Thread
 
                 logger.info("Player with ID : " + playerId + " connected on game room with session id " + this.sessionId );
 
-                new Thread(()->{
+                new Thread(()->
+                {
                     try
                     {
                         validatePlayers(playerSocket,playerId);
@@ -77,9 +84,17 @@ public class GameRoom extends Thread
                                 playerSocket.close();
 
                             }
-                            else{
+                            else
+                            {
                                 logger.info("Player with Id : " + playerId + " disconnected from game room");
                             }
+
+                            if(allPlayerDisconnected())
+                            {
+                                logger.info("closing the gameroom socket.");
+                                stopGameRoom();
+                            }
+
                         }
                         catch(IOException exception)
                         {
@@ -91,9 +106,40 @@ public class GameRoom extends Thread
                 }).start();
             }
         }
-        catch(Exception e)
+        catch(IOException exception)
         {
-            logger.severe("Error in starting game room with id : " + this.sessionId);
+            logger.severe("Game room with session Id " + this.sessionId  +" is closing...");
+
+            logger.severe(exception.getMessage());
+        }
+        finally
+        {
+            if(shouldStop.get())
+            {
+                logger.info("Game room closed");
+
+                GameManager.removeGameRoom(this.sessionId);
+            }
+        }
+    }
+
+    private boolean allPlayerDisconnected()
+    {
+        return participants.get() == 0;
+    }
+
+    private void stopGameRoom()
+    {
+        if(shouldStop.compareAndSet(false,true))
+        {
+            try
+            {
+                gameRoomSocket.close(); // This will unblock the gameRoomSocket.accept() call
+            }
+            catch (IOException e)
+            {
+                logger.severe("Error while closing game room socket: " + e.getMessage());
+            }
         }
     }
 
@@ -137,6 +183,7 @@ public class GameRoom extends Thread
                 writer.flush();
 
                 handlePlayer(player);
+                participants.getAndDecrement();
             }
             catch(NullPointerException exception)
             {

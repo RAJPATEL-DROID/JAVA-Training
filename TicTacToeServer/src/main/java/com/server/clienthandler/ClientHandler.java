@@ -14,9 +14,9 @@ import java.util.logging.Logger;
 
 public class ClientHandler extends Thread
 {
-    static ConfigReader configReader = new ConfigReader("src/main/java/com/server/utils/config.json");
+    private final ConfigReader configReader;
 
-    private static final Logger logger = LoggingUtils.getLogger();
+    private static final Logger logger = LoggingUtils.getClientHandlerLogger();
 
     private final Socket clientSocket;
 
@@ -28,7 +28,7 @@ public class ClientHandler extends Thread
 
     private PrintWriter writer;
 
-    public ClientHandler(Socket clientsocket, GameManager gameManager, String clientId)
+    public ClientHandler(Socket clientsocket, GameManager gameManager, String clientId, ConfigReader configReader)
     {
 
         this.clientSocket = clientsocket;
@@ -36,6 +36,8 @@ public class ClientHandler extends Thread
         this.gameManager = gameManager;
 
         this.clientId = clientId;
+
+        this.configReader = configReader;
 
         try
         {
@@ -65,6 +67,7 @@ public class ClientHandler extends Thread
             try
             {
                 clientSocket.close();
+
                 logger.info("Client with id : " + clientId + " disconnected");
             }
             catch(IOException exception)
@@ -97,7 +100,7 @@ public class ClientHandler extends Thread
         {
             while((inputLine = reader.readLine()) != null)
             {
-                if(inputLine.equals("1"))
+                if(inputLine.equals(configReader.get_CHOICE_FOR_NEW_GAME_ROOM()) )
                 {
                     List<String> ids = gameManager.createAndStartNewRoom();
 
@@ -108,8 +111,10 @@ public class ClientHandler extends Thread
                     writer.flush();
 
                     logger.info("New Room created with session ID : " + ids.get(1)  + " on port " + ids.get(0));
+
+                    break;
                 }
-                else if(inputLine.equals("2"))
+                else if(inputLine.equals(configReader.getJOIN_GAME_ROOM_CHOICE()))
                 {
                     writer.println("Enter Session ID : ");
 
@@ -139,7 +144,10 @@ public class ClientHandler extends Thread
 
                             break;
                         }
-                    }catch(NumberFormatException exception){
+                    }
+                    catch(NumberFormatException exception)
+                    {
+
                         logger.info("Received null from client : " + this.clientSocket.getRemoteSocketAddress().toString().split(":")[1]);
 
                     }
