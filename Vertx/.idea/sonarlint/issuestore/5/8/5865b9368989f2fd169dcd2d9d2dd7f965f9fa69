@@ -1,0 +1,13 @@
+
+V
+java:S1854"9Remove this useless assignment to local variable "vertx".(“²¯8úå¼ì1
+G
+java:S1481"*Remove this unused "vertx" local variable.(“²¯8üå¼ì1
+~	java:S125"<This block of commented-out lines of code should be removed.(ĞÆÆë8ùÜ¨»ì1J$6f63e622-dfb8-4dc7-8073-09b30283091b
+ƒ	java:S125"<This block of commented-out lines of code should be removed.(çà”àøÿÿÿÿ8öû¨»ì1J$11287cad-53c8-4846-8efa-efd9d3a0e96e
+~
+java:S1128";Remove this unused import 'io.vertx.core.AbstractVerticle'.(™ª·á8±ï§»ì1J$b7de4ef3-1b23-4b81-b1e3-1aa07ad99f16
+„
+java:S1128"<Remove this unused import 'io.vertx.core.DeploymentOptions'.(¥¬ˆèüÿÿÿÿ8²ï§»ì1J$07d53509-f3d4-4e77-9eae-af6630f118c9
+L
+java:S1128"*Remove this unused import 'java.util.Set'.(ö²„¤şÿÿÿÿ8şå¼ì1
