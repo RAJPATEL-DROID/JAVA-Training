@@ -1,0 +1,13 @@
+
+r	java:S106"+Replace this use of System.out by a logger.(ùÿ›£üÿÿÿÿ8ˆŒ¡¿ì1J$970f106f-afea-490c-a10d-9bbf1b8b8624
+m	java:S106"+Replace this use of System.out by a logger.(ıßÑ÷8‰Œ¡¿ì1J$8f4e6ea5-f6a6-4fd3-b2e5-c8cc46fc570a
+r	java:S106&"+Replace this use of System.out by a logger.(üã«çıÿÿÿÿ8ŠŒ¡¿ì1J$cc612e57-63b7-484e-b176-09bdad9be401
+m	java:S1065"+Replace this use of System.out by a logger.(×µä•8Œ¡¿ì1J$a949ecf9-30fc-42ee-9979-ceea5e14a90d
+r	java:S106:"+Replace this use of System.out by a logger.(±ÀÌ„ıÿÿÿÿ8Œ¡¿ì1J$a5490afa-e78b-4695-b95f-0ccb660f888d
+~	java:S125B"<This block of commented-out lines of code should be removed.(Ú°à¬8İ¿‘Üì1J$c03319aa-fc22-4ac3-9198-3516ae8e9b56
+r	java:S106w"+Replace this use of System.out by a logger.(’­ãÿùÿÿÿÿ8‘Œ¡¿ì1J$a717dd21-f722-4372-8c9f-5d5218e89678
+m	java:S106‚"+Replace this use of System.out by a logger.(ƒÚáB8‘Œ¡¿ì1J$98b9fa45-f1cf-472e-a604-816264eeb9b8
+s	java:S106„"+Replace this use of System.out by a logger.(Ù¿éûÿÿÿÿ8’Œ¡¿ì1J$cf84c02f-95c4-4593-8f00-ac56968c9f4a
+n	java:S106…"+Replace this use of System.out by a logger.(’™‚›8’Œ¡¿ì1J$f2856cc1-e053-4e31-90d6-da6854b7b9e6
+m
+java:S1128"*Remove this unused import 'io.vertx.core'.(¥ĞÄç8˜˜”Üì1J$1f6deaae-46ac-46e3-8b5a-9b9d94c5b4c3
