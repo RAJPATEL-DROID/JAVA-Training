@@ -1,7 +1,9 @@
 
-P
-java:S1874+"5Remove this use of "TimeoutStream"; it is deprecated.(ïæÀ–üÿÿÿÿ
-Q
-java:S1874+"6Remove this use of "periodicStream"; it is deprecated.(ïæÀ–üÿÿÿÿ
-G
-java:S1602,",Remove useless curly braces around statement(ïØâ²øÿÿÿÿ
+~
+java:S1874,"6Remove this use of "periodicStream"; it is deprecated.(–¦Õ–ûÿÿÿÿ8„Œ…í1J$b9bcfe92-be2a-4832-a76c-66ec794f0e10
+o
+java:S1602-",Remove useless curly braces around statement(”¨éŸ8„Œ…í1J$2b083926-2a91-4866-b56e-695a4295899b
+o
+java:S16029",Remove useless curly braces around statement(¤¹çá8·¶Œ…í1J$5bff0cae-b776-491a-9afb-0cf08fdbc870
+{
+java:S1128"8Remove this unused import 'io.vertx.core.TimeoutStream'.(íÓĞ²8¹¶Œ…í1J$a69e4197-0e11-44fb-8dab-2c04856929c2

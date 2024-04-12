@@ -1,0 +1,6 @@
+
+G	java:S106"+Replace this use of System.out by a logger.(êŠÆ8â‡ñí1
+s
+java:S1128"0Remove this unused import 'io.vertx.core.Vertx'.(ë™®†8°Öó†í1J$35a742cf-2018-45f9-a6c6-e4e0de37a86e
+w
+java:S1128"4Remove this unused import 'io.vertx.core.json.Json'.(ÀªÏö8°Öó†í1J$7ef4cf5f-8277-46d8-8998-e8f6beb63693
