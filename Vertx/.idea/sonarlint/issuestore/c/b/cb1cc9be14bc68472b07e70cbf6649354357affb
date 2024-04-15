@@ -1,0 +1,20 @@
+
+t
+java:S1602",Remove useless curly braces around statement(ÒÌâ–øÿÿÿÿ8¬œÜ‰î1J$a5a4def6-fee8-41a4-9463-7da88c3fa08f
+~	java:S125""<This block of commented-out lines of code should be removed.(Ú°à¬8®œÜ‰î1J$fc50b0b5-3d1c-4935-acac-fb546cd9473c
+~	java:S125."<This block of commented-out lines of code should be removed.(Ú°à¬8®œÜ‰î1J$a73dfc2f-a071-4b4c-99a3-fe915357d13d
+~	java:S1253"<This block of commented-out lines of code should be removed.(Ûíûû8®œÜ‰î1J$287fcf34-72a7-4154-bd80-56d6799d3c03
+~	java:S1257"<This block of commented-out lines of code should be removed.(Îö„Ÿ8®œÜ‰î1J$f7ecfb80-6be8-4e10-a1b9-e81c18b080f4
+ƒ	java:S125;"<This block of commented-out lines of code should be removed.( ¦Œ¹ÿÿÿÿÿ8Ôóß‰î1J$0320c9b3-e4e2-412c-a550-ac13e2b787bf
+m	java:S106D"+Replace this use of System.out by a logger.(™ñ‘Ú8°œÜ‰î1J$2366e509-9d3a-44dd-a65e-ec8457417f67
+m	java:S106I"+Replace this use of System.out by a logger.(Åÿú8±œÜ‰î1J$21f88a6b-1442-4725-9f2c-250ab3f2e860
+y
+java:S1128"1Remove this unused import 'io.vertx.core.Future'.(á±ÿËşÿÿÿÿ8²œÜ‰î1J$12c2afc6-3d18-4454-b069-ca80509e3f3b
+Š
+java:S1128"BRemove this unused import 'io.vertx.core.http.HttpServerResponse'.(Ôîşùÿÿÿÿ8²œÜ‰î1J$5e182a70-605c-4e71-81b3-0a1a2de18b62
+|
+java:S1128":Remove this unused import 'io.vertx.core.json.JsonObject'.(ûöï8²œÜ‰î1J$76dbb117-c631-4c18-9e7d-0c6a57035486
+†
+java:S1128"CRemove this unused import 'org.vertx.core.json.JsonObjectReciever'.(‘Æº¦8²œÜ‰î1J$9fb18e02-3104-4523-a81a-fc820888d921
+r
+java:S1128"/Remove this unused import 'java.nio.file.Path'.(×²êÂ8²œÜ‰î1J$9033c33d-c0f1-4fd0-a39f-452e01e64cf1

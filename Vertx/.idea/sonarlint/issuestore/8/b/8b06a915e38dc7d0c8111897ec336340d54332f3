@@ -1,0 +1,10 @@
+
+l	java:S106"+Replace this use of System.out by a logger.(ŠÄë8‡š·î1J$2513a70b-82b9-45d7-aab7-373d0108c643
+t
+java:S1602",Remove useless curly braces around statement(ÒÌâ–øÿÿÿÿ8‡š·î1J$86f7a636-e26a-4793-ba4a-e0848322865a
+~
+java:S1612"6Replace this lambda with method reference 'ctx::fail'.(Á™ò¾úÿÿÿÿ8ˆš·î1J$40cad802-7d5a-411e-b636-596ed7414764
+m	java:S106%"+Replace this use of System.out by a logger.(™ñ‘Ú8‰š·î1J$d17569d4-4b85-4903-a754-a5fd4510906a
+m	java:S106*"+Replace this use of System.out by a logger.(Åÿú8‰š·î1J$1201c320-e774-4b7d-8c5f-4947acc2e627
+f
+java:S1128"Remove this duplicated import.(šì ùüÿÿÿÿ8Šš·î1J$c519e6fc-e7f2-417a-8824-4b8c33ddaf30
