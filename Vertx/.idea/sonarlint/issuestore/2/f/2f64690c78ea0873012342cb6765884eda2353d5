@@ -1,0 +1,6 @@
+
+N
+java:S1602",Remove useless curly braces around statement(çĞ‹÷ûÿÿÿÿ8ıÒê·î1
+X	java:S125"<This block of commented-out lines of code should be removed.(™¾Æ’8ÿÒê·î1
+L	java:S106,"+Replace this use of System.out by a logger.(®†“Òıÿÿÿÿ8Óê·î1
+G	java:S1060"+Replace this use of System.out by a logger.(™–­8Óê·î1

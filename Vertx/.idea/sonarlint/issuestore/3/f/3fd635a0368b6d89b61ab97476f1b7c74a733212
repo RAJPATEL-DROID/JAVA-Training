@@ -1,0 +1,11 @@
+
+
+java:S1192"UDefine a constant instead of duplicating this literal "/products/:productID" 3 times.(ö£˜üÿÿÿÿ8ŞØÒ®î1J$db9b11a3-06b5-4dd9-b9ae-b6e347c6f147
+t
+java:S1602",Remove useless curly braces around statement(®ÍŒóøÿÿÿÿ8ìØÒ®î1J$348da029-dc93-4c49-83f6-0984f0eafcde
+t
+java:S1602$",Remove useless curly braces around statement(ÒÌâ–øÿÿÿÿ8íØÒ®î1J$c572fb18-d270-4bf9-98d9-3ba1ac2da33a
+t
+java:S1602*",Remove useless curly braces around statement(ÒÌâ–øÿÿÿÿ8îØÒ®î1J$84ae9b5e-39d5-461c-b80d-f47d21f948c6
+m	java:S1064"+Replace this use of System.out by a logger.(è»÷ƒ8ğØÒ®î1J$5a0f895f-9986-4315-8adc-69708dd87f9d
+m	java:S1068"+Replace this use of System.out by a logger.(ÿâ8ñØÒ®î1J$8d6ebf6f-8f62-44d2-819a-0b33d7c55386
